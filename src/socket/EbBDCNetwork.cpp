@@ -460,20 +460,3 @@ bool NetAddressIpv4::operator==(const NetAddressIpv4& addr)
 	}
 	return true;
 }
-
-bool NetAddressIpv6::operator==(const NetAddressIpv6& addr)
-{
-	if (addrV6.sin6_family != addr.addrV6.sin6_family)
-	{
-		return false;
-	}
-	if (memcmp(addrV6.sin6_addr.s6_addr, addr.addrV6.sin6_addr.s6_addr, sizeof(addr.addrV6.sin6_addr.s6_addr)) != 0)
-	{
-		return false;
-	}
-	if (addrV6.sin6_port != addr.addrV6.sin6_port)
-	{
-		return false;
-	}
-	return true;
-}

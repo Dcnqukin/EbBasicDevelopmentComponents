@@ -6,7 +6,9 @@
 #define PROTOCOL_ADDR_LENGTH 16
 #define NET_TCP_NODELAY 8
 #include <vector>
-
+#if defined(_WIN32)
+#include <winsock2.h>
+#endif
 #define NET_SOCKET SOCKET
 #define NET_fd_set fd_set
 #define NET_FD_ZERO FD_ZERO
@@ -31,12 +33,6 @@ struct NetAddressIpv4
 {
 	sockaddr_in addrV4;
 	bool operator==(const NetAddressIpv4& addr);
-};
-
-struct NetAddressIpv6
-{
-	sockaddr_in6 addrV6;
-	bool operator==(const NetAddressIpv6& addr);
 };
 
 struct NetAddr
