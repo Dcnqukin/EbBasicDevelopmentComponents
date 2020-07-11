@@ -444,6 +444,74 @@ BDCNetECode BDCNetECodeMap(int errCode)
 	}
 }
 
+BDCNetECode BDCTCPNetSetKeepAlive(NET_SOCKET sock, TCPKeepalive* optVal)
+{
+	bool bKeepAlive = true;
+	int ret = setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (const char*)&bKeepAlive, sizeof(bool));
+	if (ret != 0)
+	{
+		return BDCNetECodeMap(ret);
+	}
+	if (optVal != NULL)
+	{
+		if (optVal->tcpMaxrt < 0)
+		{
+			DWORD maxrt = -1;
+			ret = setsockopt(sock, IPPROTO_TCP, TCP_MAXRT, (const char*)&maxrt, sizeof(DWORD));
+		}
+		else
+		{
+			ret = setsockopt(sock, IPPROTO_TCP, TCP_MAXRT, (const char*)&optVal->tcpMaxrt, sizeof(DWORD));
+		}
+		if (ret != 0)
+		{
+			return BDCNetECodeMap(ret);
+		}
+		ret = setsockopt(sock, IPPROTO_TCP, TCP_KEEPIDLE, (const char*)&optVal->keepIdle, sizeof(DWORD));
+		if (ret != 0)
+		{
+			return BDCNetECodeMap(ret);
+		}
+		ret = setsockopt(sock, IPPROTO_TCP, TCP_KEEPINTVL, (const char*)&optVal->keepIntvl, sizeof(DWORD));
+		if (ret != 0)
+		{
+			return BDCNetECodeMap(ret);
+		}
+	}
+	return NET_SUCCEED;
+}
+
+BDCNetECode BDCUDPNetSetBroadCast(NET_SOCKET sock)
+{
+	bool bBroadCast = true;
+	int ret = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&bBroadCast, sizeof(bool));
+	if (ret != 0)
+	{
+		return BDCNetECodeMap(ret);
+	}
+	return NET_SUCCEED;
+}
+
+BDCNetECode BDCNetSetSendBufSize(NET_SOCKET sock, int sendBufSize)
+{
+	int ret = setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (const char*)&sendBufSize, sizeof(int));
+	if (ret != 0)
+	{
+		return BDCNetECodeMap(ret);
+	}
+	return NET_SUCCEED;
+}
+
+BDCNetECode BDCNetSetRecvBufSize(NET_SOCKET sock, int recvBufSize)
+{
+	int ret = setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (const char*)&recvBufSize, sizeof(int));
+	if (ret != 0)
+	{
+		return BDCNetECodeMap(ret);
+	}
+	return NET_SUCCEED;
+}
+
 bool NetAddressIpv4::operator==(const NetAddressIpv4& addr)
 {
 	if (addrV4.sin_family != addr.addrV4.sin_family)

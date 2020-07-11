@@ -62,6 +62,13 @@ enum NetProtocol
 	NET_PROTO_TCP,
 };
 
+struct TCPKeepalive
+{
+	DWORD tcpMaxrt;
+	DWORD keepIdle;
+	DWORD keepIntvl;
+};
+
 BDCNetECode BDCNetStartup();
 
 BDCNetECode BDCNetClose();
@@ -85,4 +92,12 @@ BDCNetECode BDCNetSend(NET_SOCKET sock, NetBuffer *buffers, NetAddressIpv4* addr
 BDCNetECode BDCNetRecv(NET_SOCKET sock, NetBuffer* buffers, size_t* recvSize, NetAddressIpv4* srcAddr, NetProtocol proto, unsigned int option);
 
 BDCNetECode BDCNetECodeMap(int errCode);
+
+BDCNetECode BDCTCPNetSetKeepAlive(NET_SOCKET sock, TCPKeepalive* optVal);
+
+BDCNetECode BDCUDPNetSetBroadCast(NET_SOCKET sock);
+
+BDCNetECode BDCNetSetSendBufSize(NET_SOCKET sock, int sendBufSize);
+
+BDCNetECode BDCNetSetRecvBufSize(NET_SOCKET sock, int recvBufSize);
 #endif
