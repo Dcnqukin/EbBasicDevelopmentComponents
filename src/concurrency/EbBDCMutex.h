@@ -7,7 +7,7 @@
 #include <pthread.h>
 #endif
 
-class UtilityMutex
+class BDCMutex
 {
 public:
 	int tryLock();
@@ -16,9 +16,9 @@ public:
 
 	int unlock();
 
-	UtilityMutex();
+	BDCMutex();
 
-	~UtilityMutex();
+	~BDCMutex();
 private:
 #ifdef _WIN32
 	CRITICAL_SECTION m_lock;

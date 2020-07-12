@@ -1,6 +1,6 @@
 #include "EbBDCMutex.h"
 
-int UtilityMutex::tryLock()
+int BDCMutex::tryLock()
 {
 	int result = -1;
 #ifdef _WIN32
@@ -12,7 +12,7 @@ int UtilityMutex::tryLock()
 	return result;
 }
 
-int UtilityMutex::lock()
+int BDCMutex::lock()
 {
 #ifdef _WIN32
 	EnterCriticalSection(&m_lock);
@@ -22,7 +22,7 @@ int UtilityMutex::lock()
 	return 0;
 }
 
-int UtilityMutex::unlock()
+int BDCMutex::unlock()
 {
 #ifdef _WIN32
 	LeaveCriticalSection(&m_lock);
@@ -32,7 +32,7 @@ int UtilityMutex::unlock()
 	return 0;
 }
 
-UtilityMutex::UtilityMutex()
+BDCMutex::BDCMutex()
 {
 #ifdef _WIN32
 	InitializeCriticalSection(&m_lock);
@@ -49,7 +49,7 @@ UtilityMutex::UtilityMutex()
 #endif
 }
 
-UtilityMutex::~UtilityMutex()
+BDCMutex::~BDCMutex()
 {
 #ifdef _WIN32
 	DeleteCriticalSection(&m_lock);
