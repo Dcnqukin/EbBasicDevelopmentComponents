@@ -8,6 +8,14 @@
 #include <vector>
 #if defined(_WIN32)
 #include <winsock2.h>
+#elif defined(__APPLE__)
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#define SOCKET int
+#define INVALID_SOCKET (SOCKET)(~0)
+#define SOCKET_ERROR           (-1)
 #endif
 #define NET_SOCKET SOCKET
 #define NET_fd_set fd_set
@@ -18,55 +26,61 @@
 typedef std::vector<NET_SOCKET> SocketList;
 struct NetBuffer
 {
-	void* data[MAXBUFSIZE];
-	int len[MAXBUFSIZE];
-	int totalNum;
+    void* data[MAXBUFSIZE];
+    int len[MAXBUFSIZE];
+    int totalNum;
 };
 
 enum NetSocketType
 {
-	NET_ADDR_IPV4,
-	NET_ADDR_IPV6,
+    NET_ADDR_IPV4,
+    NET_ADDR_IPV6,
 };
 
 struct NetAddressIpv4
 {
-	sockaddr_in addrV4;
-	bool operator==(const NetAddressIpv4& addr);
+    sockaddr_in addrV4;
+    bool operator==(const NetAddressIpv4& addr);
 };
 
 struct NetAddr
 {
-	NetSocketType type;
-	unsigned char protocalAddr[PROTOCOL_ADDR_LENGTH];
-	int port;
+    NetSocketType type;
+    unsigned char protocalAddr[PROTOCOL_ADDR_LENGTH];
+    int port;
 };
 
 typedef struct NetTimeVal
 {
-	int sec;
-	int nanosec;
+    int sec;
+    int nanosec;
 }NetTimeVal;
 
 enum NetOption
 {
-	NET_NOPT_DEFAULT,
-	NET_NOPT_WRSOCKET, //д
-	NET_NOPT_RDSOCKET, //��
-	NET_NOPT_WRSOCKETONLY, // ֻд
+    NET_NOPT_DEFAULT,
+    NET_NOPT_WRSOCKET, //Ð´
+    NET_NOPT_RDSOCKET, //¶Á
+    NET_NOPT_WRSOCKETONLY, // Ö»Ð´
 };
 
 enum NetProtocol
 {
-	NET_PROTO_UDP,
-	NET_PROTO_TCP,
+    NET_PROTO_UDP,
+    NET_PROTO_TCP,
 };
 
 struct TCPKeepalive
 {
-	DWORD tcpMaxrt;
-	DWORD keepIdle;
-	DWORD keepIntvl;
+#ifdef _WIN32
+    DWORD tcpMaxrt;
+    DWORD keepIdle;
+    DWORD keepIntvl;
+#elif __APPLE__
+    int maxseg;
+    int keepcnt;
+    int keepIntvl;
+#endif
 };
 
 BDCNetECode BDCNetStartup();
@@ -93,9 +107,13 @@ BDCNetECode BDCNetRecv(NET_SOCKET sock, NetBuffer* buffers, size_t* recvSize, Ne
 
 BDCNetECode BDCNetECodeMap(int errCode);
 
+int BDCNetGetLastError();
+
 BDCNetECode BDCTCPNetSetKeepAlive(NET_SOCKET sock, TCPKeepalive* optVal);
 
 BDCNetECode BDCUDPNetSetBroadCast(NET_SOCKET sock);
+
+BDCNetECode BDCUDPNetAddMembership(NET_SOCKET sock, NetAddr* multicast, NetAddr* local);
 
 BDCNetECode BDCNetSetSendBufSize(NET_SOCKET sock, int sendBufSize);
 
